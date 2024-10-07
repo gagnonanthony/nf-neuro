@@ -1,0 +1,2 @@
+qc/trackingcoverage:
+  - "modules/nf-neuro/qc/trackingcoverage/**"

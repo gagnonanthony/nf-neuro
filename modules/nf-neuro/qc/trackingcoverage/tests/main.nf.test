@@ -1,0 +1,47 @@
+nextflow_process {
+
+    name "Test Process QC_TRACKINGCOVERAGE"
+    script "../main.nf"
+    process "QC_TRACKINGCOVERAGE"
+
+    tag "modules"
+    tag "modules_nfcore"
+    tag "qc"
+    tag "qc/trackingcoverage"
+
+    setup {
+        run("LOAD_TEST_DATA", alias: "LOAD_DATA") {
+            script "../../../../../subworkflows/nf-neuro/load_test_data/main.nf"
+            process {
+                """
+                input[0] = Channel.from( [ "tracking.zip" ] )
+                input[1] = "test.load-test-data"
+                """
+            }
+        }
+    }
+
+    test("qc - trackingcoverage") {
+
+        when {
+            process {
+                """
+                input[0] = LOAD_DATA.out.test_data_directory.map{
+                    test_data_directory -> [
+                        [ id:'test', single_end:false ], // meta map
+                        file("\${test_data_directory}/pft.trk"),
+                        file("\${test_data_directory}/seeding_mask.nii.gz")
+                    ]
+                }
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+}
