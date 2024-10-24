@@ -1,0 +1,2 @@
+qc/outlierremoval:
+  - "modules/nf-neuro/qc/outlierremoval/**"

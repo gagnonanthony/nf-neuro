@@ -1,54 +1,81 @@
 ---
 name: "qc_trackingcoverage"
-## TODO nf-core: Add a description of the module and list keywords
-description: write your description here
+description: |
+  This module acts as the first step to perform minimal quantitative QC on a
+  tractogram. First, it computes streamline counts for further QCing. Then,
+  it computes the track density image (TDI) with its accompanying binary mask
+  and compare it against the provided mask using the DICE score. The DICE score
+  will be reused to remove outliers in the population-level QC. Finally, a
+  visual results of the TDI overlaid with the provided mask is generated for
+  visual inspection.
 keywords:
-  - sort
-  - example
-  - genomics
+  - QC
+  - Tracking
+  - DICE
 tools:
-  - "qc":
-      ## TODO nf-core: Add a description and other details for the software below
-      description: ""
-      homepage: ""
-      documentation: ""
-      tool_dev_url: ""
-      doi: ""
-      licence:
+  - "scilpy":
+      description: "The Sherbrooke Connectivity Imaging Lab (SCIL) Python dMRI processing toolbox."
+      homepage: "https://github.com/scilus/scilpy.git"
+  - "MRtrix3":
+      description: "Toolbox for image processing, analysis and visualisation of dMRI."
+      homepage: "https://mrtrix.readthedocs.io/en/latest/"
 
-## TODO nf-core: Add a description of all of the variables used as input
 input:
-  # Only when we have meta
   - meta:
       type: map
       description: |
         Groovy Map containing sample information
         e.g. `[ id:'sample1', single_end:false ]`
 
-  ## TODO nf-core: Delete / customise this example input
-  - bam:
+  - tractogram:
       type: file
-      description: Sorted BAM/CRAM/SAM file
-      pattern: "*.{bam,cram,sam}"
+      description: Whole-brain tractogram.
+      pattern: "*.trk"
 
-## TODO nf-core: Add a description of all of the variables used as output
+  - mask:
+      type: file
+      description: Binary mask.
+      pattern: "*.{nii,nii.gz}"
+
 output:
-  #Only when we have meta
   - meta:
       type: map
       description: |
         Groovy Map containing sample information
         e.g. `[ id:'sample1', single_end:false ]`
+
+  - tractogram_mask:
+      type: file
+      description: Binary mask file of the TDI (defined as density > 0).
+      pattern: "*__tractogram_mask.nii.gz"
+
+  - TDI:
+      type: file
+      description: Track Density Image (TDI) for the provided tractogram.
+      pattern: "*__TDI.nii.gz"
+
+  - stats:
+      type: file
+      description: |
+        JSON file containing the statistics of the pairwise comparison between
+        the TDI mask and provided mask. Contains adjacency, DICE, overlap, and
+        overreach.
+      pattern: "*__stats.json"
+
+  - sc:
+      type: file
+      description: Text file containing the streamline count.
+      pattern: "*__sc.txt"
+
+  - png:
+      type: file
+      description: Figure file of the TDI and the provided mask overlaid.
+      pattern: "*.png"
 
   - versions:
       type: file
       description: File containing software versions
       pattern: "versions.yml"
-  ## TODO nf-core: Delete / customise this example output
-  - bam:
-      type: file
-      description: Sorted BAM/CRAM/SAM file
-      pattern: "*.{bam,cram,sam}"
 
 authors:
   - "@gagnonanthony"

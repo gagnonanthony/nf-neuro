@@ -10,12 +10,12 @@ process QC_TRACKINGCOVERAGE {
         tuple val(meta), path(tractogram), path(mask)
 
     output:
-        tuple val(meta), path("${prefix}_tractogram_mask.nii.gz")   , emit: tractogram_mask
-        tuple val(meta), path("${prefix}_TDI.nii.gz")               , emit: TDI
-        tuple val(meta), path("${prefix}_stats.json")               , emit: stats
-        tuple val(meta), path("${prefix}_sc.txt")                   , emit: sc
-        tuple val(meta), path("${prefix}_coverage_overlay.png")     , emit: png
-        path "versions.yml"                                         , emit: versions
+        tuple val(meta), path("*__tractogram_mask.nii.gz")   , emit: tractogram_mask
+        tuple val(meta), path("*__TDI.nii.gz")               , emit: TDI
+        tuple val(meta), path("*__stats.json")               , emit: stats
+        tuple val(meta), path("*__sc.txt")                   , emit: sc
+        path "*.png"                                         , emit: png
+        path "versions.yml"                                  , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -32,21 +32,25 @@ process QC_TRACKINGCOVERAGE {
     def n_steps = task.ext.n_steps ? "--n_steps ${task.ext.n_steps}" : ''
 
     """
-    scil_tractogram_count_streamlines.py $tractogram --print_count_alone > ${prefix}_sc.txt
+    scil_tractogram_count_streamlines.py $tractogram --print_count_alone > ${prefix}__sc.txt
 
     # Computing TODI.
     scil_tractogram_compute_TODI.py $tractogram \
-        --out_mask ${prefix}_tractogram_mask.nii.gz \
-        --out_tdi ${prefix}_TDI.nii.gz \
+        --out_mask ${prefix}__tractogram_mask.nii.gz \
+        --out_tdi ${prefix}__TDI.nii.gz \
         $sh_basis $sphere $sh_order $normalize_per_voxel \
         $smooth_todi $asymmetric $n_steps
 
     # Computing DICE score.
-    scil_volume_pairwise_comparison.py $mask ${prefix}_tractogram_mask.nii.gz \
-        ${prefix}_stats.json
+    scil_volume_pairwise_comparison.py $mask ${prefix}__tractogram_mask.nii.gz \
+        ${prefix}__stats.json
+
+    # Fetch middle axial slice.
+    size=\$(mrinfo ${prefix}__TDI.nii.gz -size)
+    mid_slice=\$(echo \$size | awk '{print int((\$2 + 1) / 2)}')
 
     # Visual QC file.
-    scil_viz_volume_screenshot.py ${prefix}_TDI.nii.gz ${prefix}_coverage_overlay.png \
+    scil_viz_volume_screenshot.py ${prefix}__TDI.nii.gz ${prefix}__coverage_overlay.png \
         --volume_cmap pink \
         --overlays $mask \
         --overlays_opacity 0 \
@@ -54,12 +58,12 @@ process QC_TRACKINGCOVERAGE {
         --display_slice_number \
         --display_lr \
         --overlays_colors 0 255 0 \
-        --slices 75 \
+        --slices \$mid_slice \
         --axis axial
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        scilpy: \$(pip list | grep scilpy | tr -s ' ' | cut -d' ' -f2)
+        scilpy: \$(pip list --disable-pip-version-check --no-python-version-warning | grep scilpy | tr -s ' ' | cut -d ' ' -f2)
     END_VERSIONS
     """
 
@@ -67,11 +71,11 @@ process QC_TRACKINGCOVERAGE {
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
-    touch ${prefix}_tractogram_mask.nii.gz
-    touch ${prefix}_TDI.nii.gz
-    touch ${prefix}_stats.json
-    touch ${prefix}_sc.txt
-    touch ${prefix}_coverage_overlay.png
+    touch ${prefix}__tractogram_mask.nii.gz
+    touch ${prefix}__TDI.nii.gz
+    touch ${prefix}__stats.json
+    touch ${prefix}__sc.txt
+    touch ${prefix}__coverage_overlay.png
 
     scil_tractogram_count_streamlines.py -h
     scil_tractogram_compute_TODI.py -h
@@ -80,7 +84,7 @@ process QC_TRACKINGCOVERAGE {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        scilpy: \$(pip list | grep scilpy | tr -s ' ' | cut -d' ' -f2)
+        scilpy: \$(pip list --disable-pip-version-check --no-python-version-warning | grep scilpy | tr -s ' ' | cut -d ' ' -f2)
     END_VERSIONS
     """
 }

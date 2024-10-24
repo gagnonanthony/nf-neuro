@@ -1,0 +1,97 @@
+{
+    "qc - trackingcoverage": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test__tractogram_mask.nii.gz:md5,4ce57fee196997a972d5c33202eeb74f"
+                    ]
+                ],
+                "1": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test__TDI.nii.gz:md5,f4d9df11957de7b4b77314e07e08afa2"
+                    ]
+                ],
+                "2": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test__stats.json:md5,9078688e95816d3479936e74b17a2d21"
+                    ]
+                ],
+                "3": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test__sc.txt:md5,dc815a1f602788e79d9e5dbcc15b05fc"
+                    ]
+                ],
+                "4": [
+                    "test__coverage_overlay_slice_42.png:md5,1c031c38485271e5ba755947f9644c80"
+                ],
+                "5": [
+                    "versions.yml:md5,bac162443aba01f87005a66902dfee95"
+                ],
+                "TDI": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test__TDI.nii.gz:md5,f4d9df11957de7b4b77314e07e08afa2"
+                    ]
+                ],
+                "png": [
+                    "test__coverage_overlay_slice_42.png:md5,1c031c38485271e5ba755947f9644c80"
+                ],
+                "sc": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test__sc.txt:md5,dc815a1f602788e79d9e5dbcc15b05fc"
+                    ]
+                ],
+                "stats": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test__stats.json:md5,9078688e95816d3479936e74b17a2d21"
+                    ]
+                ],
+                "tractogram_mask": [
+                    [
+                        {
+                            "id": "test",
+                            "single_end": false
+                        },
+                        "test__tractogram_mask.nii.gz:md5,4ce57fee196997a972d5c33202eeb74f"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,bac162443aba01f87005a66902dfee95"
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
+        },
+        "timestamp": "2024-10-07T15:59:12.176208"
+    }
+}
